@@ -1,0 +1,129 @@
+
+enum ValueType{
+	PASSFAIL, NUMERIC, PERCENT, GRADE
+}
+enum DutyType{
+	OFFDUTY, DRIVE, SLEEP, ONDUTY
+}
+entity PaymentType {
+	name String,
+	upperLimit Double
+}
+
+entity Vihecle {
+	vehecleName String,
+    licencePlate String,
+    note String
+}
+
+entity Driver {
+	driverName String,
+    registerDate Instant,
+    note String
+}
+entity Payment {
+	timeStamp Instant,
+    driver Driver,
+    reason String,
+    amount Double,
+    tax Double,
+    paymentType PaymentType
+}
+
+
+entity FuelLog {
+	timeStamp Instant,
+    vihecle Vihecle,
+    driver Driver,
+    recipt String,
+	location String,
+	shippingDocument ShippingDocument,
+    gallons Double,
+    pricePerGallon Double,
+    totalPrice Double,
+    reciptPicture String,
+    payment Payment
+}
+
+entity ShippingDocument {
+	dvl String,
+    manifastNumber String,
+    recordDate Instant,
+    fromAddress String,
+    toAddress String,
+    startDate Instant,
+    endDate Instant,
+	note String
+}
+
+entity MileageLog {
+
+    logdate Instant,
+    vihecle Vihecle,
+    driver Driver,
+    shippingDocument ShippingDocument,
+	businessPurpose String,
+	startDate Instant,
+    endDate Instant,
+	startMile Long,
+	endMile Long,
+    totalMile Long,
+    note String
+}
+
+entity DutyLog{
+	dutyType DutyType,
+	vihecle Vihecle,
+    driver Driver,
+    shippingDocument ShippingDocument,
+    startDate Instant,
+    endDate Instant,
+    startMile Long,
+	endMile Long,
+    totalMile Long,
+    logdate Instant
+}
+
+entity InspectionReport{
+	logdate Instant,
+    checkdate Instant,
+    driver Driver,
+    vihecle Vihecle,
+    inspectedItem InspectedItem,
+    result String
+    
+}
+entity InspectedItem{
+	discription String,
+    shortDiscription String,
+    valueType ValueType
+}
+
+
+
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	Vihecle to DutyLog{vihecle},
+    Vihecle to MileageLog{vihecle},
+    Vihecle to FuelLog{vihecle},
+    Vihecle to InspectionReport{vihecle},
+    Driver to DutyLog{driver},
+    Driver to MileageLog{driver},
+    Driver to FuelLog{driver},
+    Driver to Payment{driver},
+    Driver to InspectionReport{driver},
+    ShippingDocument to DutyLog{shippingDocument},
+    ShippingDocument to MileageLog{shippingDocument},
+    ShippingDocument to FuelLog{shippingDocument},
+    InspectedItem to InspectionReport{inspectedItem},
+    PaymentType to Payment{PaymentType},
+    Payment to FuelLog{payment}
+}
+
+
+// Set pagination options
+paginate DutyLog, FuelLog with infinite-scroll
+paginate ShippingDocument with pagination
+
+
